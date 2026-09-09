@@ -42,6 +42,7 @@ public:
             double res_pte2,
             double res_qt,
             double res_phistar,
+            std::vector<double> ePhotons,
             double weight
             );
     void write();
@@ -61,13 +62,13 @@ private:
     TH1D* h_HT_;
     TH1D* h_nJets_;
     TH1D* h_jet_pts_;
-    TH1D* h_deltaR_leps_;
-    TH1D* h_mpt_;
+    //TH1D* h_mpt_;
+    TH1D* h_dR_photons_;
 
-    TH2D* res_pte1_;
-    TH2D* res_pte2_;
-    TH2D* res_qt_;
-    TH2D* res_phistar_;
+    //TH2D* res_pte1_;
+    //TH2D* res_pte2_;
+    //TH2D* res_qt_;
+    //TH2D* res_phistar_;
 
     TH2D* h_HT_vs_qT_;
     TH2D* h_vecHT_vs_qT_;

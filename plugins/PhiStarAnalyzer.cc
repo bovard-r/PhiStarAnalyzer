@@ -197,11 +197,32 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         auto& cfg = configs_[i];
 
         reco::Candidate::LorentzVector p1, p2;
+        std::vector<double> ePhotons;
         if (cfg.source == "Gen") {
             p1 = e1->p4(); p2 = e2->p4();
         } else if (cfg.source == "Smeared") {
             p1 = PhiStarUtils::smear(*e1, engine); p2 = PhiStarUtils::smear(*e2, engine);   
-        //} else if (cfg.source == "Reco") {
+        } else if (cfg.source == "Dressed") {
+            p1 = e1->p4(); p2 = e2->p4();
+            for (auto& genPh : *genParticles) {
+                if (genPh.status() != 1 || genPh.pdgId() != 22) continue;
+                if (!genPh.isPromptFinalState()) continue;
+
+                double dR1 = reco::deltaR(*e1, genPh);
+                double dR2 = reco::deltaR(*e2, genPh);
+
+                if (dR1 < dR2) {
+                    ePhotons.push_back(dR1);
+                    if (dR1 < 0.1) {
+                        p1 += genPh.p4();
+                    }
+                } else {
+                    ePhotons.push_back(dR2);
+                    if (dR2 < 0.1) {
+                        p2 += genPh.p4();
+                    }
+                }
+            }
         } else {
             throw cms::Exception("Configuration") << "Unknown electronSource: " << cfg.source;
         }
@@ -243,7 +264,7 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
                 if (Z.pt() <= sum_jets.pt() + 15.0) continue;
             }
 
-            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, eventWeight);
+            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, ePhotons, eventWeight);
         }
     }
 

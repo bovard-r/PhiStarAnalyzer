@@ -74,22 +74,22 @@ PhiStarPlotter::PhiStarPlotter(const std::string& outputDir)
 
     h_jet_pts_ = new TH1D("h_jet_pts", "All jet pts", 250, 0, 250);
 
-    h_deltaR_leps_ = new TH1D("h_deltaR_leps", "Delta R;Delta R;Events", 60, 0, 6);
+    h_dR_photons_ = new TH1D("h_dR_photons", "Delta R between FSR photons and their electrons", 100, 0, 1);
 
-    h_mpt_ = new TH1D("h_mpt", "Missing transverse momentum", 150, 0, 150);
+    //h_mpt_ = new TH1D("h_mpt", "Missing transverse momentum", 150, 0, 150);
 
-    res_pte1_ = new TH2D("res_pte1", "e1 pt difference", 
-            50, 25, 150,
-            50, -0.04, 0.04);
-    res_pte2_ = new TH2D("res_pte2", "e2 pt difference", 
-            50, 15, 150,
-            50, -0.04, 0.04);
-    res_qt_ = new TH2D("res_qt", "qt difference", 
-            50, 0, 50,
-            50, -0.1, 0.1);
-    res_phistar_ = new TH2D("res_phistar", "phistar difference", 
-            50, 0, 50,
-            50, -0.01, 0.01);
+    //res_pte1_ = new TH2D("res_pte1", "e1 pt difference", 
+    //        50, 25, 150,
+    //        50, -0.04, 0.04);
+    //res_pte2_ = new TH2D("res_pte2", "e2 pt difference", 
+    //        50, 15, 150,
+    //        50, -0.04, 0.04);
+    //res_qt_ = new TH2D("res_qt", "qt difference", 
+    //        50, 0, 50,
+    //        50, -0.1, 0.1);
+    //res_phistar_ = new TH2D("res_phistar", "phistar difference", 
+    //        50, 0, 50,
+    //        50, -0.01, 0.01);
 
     h_HT_vs_qT_ = new TH2D("h_HT_vs_qT", "HT vs qT;HT;qT", 
                     20, 0.0, 500.0,
@@ -113,6 +113,7 @@ void PhiStarPlotter::fill(
         double res_pte2,
         double res_qt,
         double res_phistar,
+        std::vector<double> ePhotons,
         double weight) 
     {
 
@@ -138,15 +139,17 @@ void PhiStarPlotter::fill(
         h_jet_pts_->Fill(jet->pt(), weight);
     }
 
-    h_deltaR_leps_->Fill(reco::deltaR(e1, e2), weight);
+    for (const auto& dR : ePhotons) {
+        h_dR_photons_->Fill(dR, weight);
+    }
 
-    double mpt = (sum_jets + e1 + e2).pt();
-    h_mpt_->Fill(mpt, weight);
+    //double mpt = sum_jets.pt();
+    //h_mpt_->Fill(mpt, weight);
 
-    res_pte1_->Fill(e1.pt(), res_pte1, weight);
-    res_pte2_->Fill(e2.pt(), res_pte2, weight);
-    res_qt_->Fill(Z.pt(), res_qt, weight);
-    res_phistar_->Fill(Z.pt(), res_phistar, weight);
+    //res_pte1_->Fill(e1.pt(), res_pte1, weight);
+    //res_pte2_->Fill(e2.pt(), res_pte2, weight);
+    //res_qt_->Fill(Z.pt(), res_qt, weight);
+    //res_phistar_->Fill(Z.pt(), res_phistar, weight);
 
     h_HT_vs_qT_->Fill(HT, Z.pt(), weight);
 
@@ -178,14 +181,14 @@ void PhiStarPlotter::write() {
 
     h_jet_pts_->Write();
 
-    h_deltaR_leps_->Write();
+    h_dR_photons_->Write();
 
-    h_mpt_->Write();
+    //h_mpt_->Write();
 
-    res_pte1_->Write();
-    res_pte2_->Write();
-    res_qt_->Write();
-    res_phistar_->Write();
+    //res_pte1_->Write();
+    //res_pte2_->Write();
+    //res_qt_->Write();
+    //res_phistar_->Write();
 
     h_HT_vs_qT_->Write();
 
