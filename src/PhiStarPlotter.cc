@@ -74,7 +74,7 @@ PhiStarPlotter::PhiStarPlotter(const std::string& outputDir)
 
     h_jet_pts_ = new TH1D("h_jet_pts", "All jet pts", 250, 0, 250);
 
-    h_dR_photons_ = new TH1D("h_dR_photons", "Delta R between FSR photons and their electrons", 100, 0, 1);
+    h_dR_jets_ = new TH1D("h_dR_jets", "Delta R between electrons and closest jets", 100, 0, 1);
 
     //h_mpt_ = new TH1D("h_mpt", "Missing transverse momentum", 150, 0, 150);
 
@@ -113,7 +113,7 @@ void PhiStarPlotter::fill(
         double res_pte2,
         double res_qt,
         double res_phistar,
-        std::vector<double> ePhotons,
+        std::vector<double> deltas,
         double weight) 
     {
 
@@ -139,8 +139,8 @@ void PhiStarPlotter::fill(
         h_jet_pts_->Fill(jet->pt(), weight);
     }
 
-    for (const auto& dR : ePhotons) {
-        h_dR_photons_->Fill(dR, weight);
+    for (const auto& dR : deltas) {
+        h_dR_jets_->Fill(dR, weight);
     }
 
     //double mpt = sum_jets.pt();
@@ -181,7 +181,7 @@ void PhiStarPlotter::write() {
 
     h_jet_pts_->Write();
 
-    h_dR_photons_->Write();
+    h_dR_jets_->Write();
 
     //h_mpt_->Write();
 

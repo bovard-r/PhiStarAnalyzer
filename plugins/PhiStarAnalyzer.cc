@@ -197,7 +197,6 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         auto& cfg = configs_[i];
 
         reco::Candidate::LorentzVector p1, p2;
-        std::vector<double> ePhotons;
         if (cfg.source == "Gen") {
             p1 = e1->p4(); p2 = e2->p4();
         } else if (cfg.source == "Smeared") {
@@ -212,12 +211,10 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
                 double dR2 = reco::deltaR(*e2, genPh);
 
                 if (dR1 < dR2) {
-                    ePhotons.push_back(dR1);
                     if (dR1 < 0.1) {
                         p1 += genPh.p4();
                     }
                 } else {
-                    ePhotons.push_back(dR2);
                     if (dR2 < 0.1) {
                         p2 += genPh.p4();
                     }
@@ -240,6 +237,21 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
             cfg.sumOfWeights += eventWeight;
 
             std::vector<const reco::GenJet*> goodJets = PhiStarUtils::cleanJets(*genJets, zElectrons, cfg.cuts.maxJetEta);
+            std::vector<double> deltas;
+            double minDR1 = 999.0;
+            double minDR2 = 999.0;
+            for (auto& jet : *genJets) {
+                double dr1 = reco::deltaR(p1, jet);
+                double dr2 = reco::deltaR(p2, jet);
+                if (dr1 < minDR1) {
+                    minDR1 = dr1;
+                }
+                if (dr2 < minDR2) {
+                    minDR2 = dr2;
+                }
+            }
+            deltas.push_back(minDR1);
+            deltas.push_back(minDR2);
 
             double phistar = PhiStarUtils::computePhiStar(p1, p2);
 
@@ -264,7 +276,7 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
                 if (Z.pt() <= sum_jets.pt() + 15.0) continue;
             }
 
-            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, ePhotons, eventWeight);
+            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, deltas, eventWeight);
         }
     }
 
