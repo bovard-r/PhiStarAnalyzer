@@ -43,6 +43,7 @@ public:
             double res_qt,
             double res_phistar,
             std::vector<double> deltas,
+            double mpt,
             double weight
             );
     void write();
@@ -62,7 +63,7 @@ private:
     TH1D* h_HT_;
     TH1D* h_nJets_;
     TH1D* h_jet_pts_;
-    //TH1D* h_mpt_;
+    TH1D* h_mpt_;
     TH1D* h_dR_jets_;
 
     //TH2D* res_pte1_;

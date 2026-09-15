@@ -240,6 +240,7 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
             std::vector<double> deltas;
             double minDR1 = 999.0;
             double minDR2 = 999.0;
+            reco::Candidate::LorentzVector sum_all_jets(0, 0, 0, 0);
             for (auto& jet : *genJets) {
                 double dr1 = reco::deltaR(p1, jet);
                 double dr2 = reco::deltaR(p2, jet);
@@ -249,9 +250,17 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
                 if (dr2 < minDR2) {
                     minDR2 = dr2;
                 }
+                sum_all_jets += jet.p4();
             }
             deltas.push_back(minDR1);
             deltas.push_back(minDR2);
+
+            for (const auto& p : *genParticles) {
+                if (p.status() != 1) continue;
+                if (std::abs(p.pdgId()) == 12 || std::abs(p.pdgId()) == 14 || std::abs(p.pdgId()) == 16) {
+                    sum_all_jets += p.p4();
+                }
+            }
 
             double phistar = PhiStarUtils::computePhiStar(p1, p2);
 
@@ -276,7 +285,7 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
                 if (Z.pt() <= sum_jets.pt() + 15.0) continue;
             }
 
-            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, deltas, eventWeight);
+            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, deltas, sum_all_jets.pt(), eventWeight);
         }
     }
 

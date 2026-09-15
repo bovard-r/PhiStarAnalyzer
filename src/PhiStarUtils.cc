@@ -123,7 +123,7 @@ namespace PhiStarUtils {
         for (const auto& jet : jets) {
             bool isolated = std::all_of(electrons.begin(), electrons.end(),
                 [&jet](const reco::GenParticle* e) {
-                    return reco::deltaR(jet, *e) > 0.4;
+                    return reco::deltaR(jet, *e) > 0.1;
                 });
             if (isolated && std::abs(jet.eta()) < maxEta) {
                 goodJets.push_back(&jet);
