@@ -100,6 +100,7 @@ PhiStarAnalyzer::PhiStarAnalyzer(const edm::ParameterSet& iConfig) :
         cfg.cuts.minPte2 = pset.getParameter<double>("minPte2");
         cfg.cuts.maxEta = pset.getParameter<double>("maxEta");
         cfg.cuts.minEta = pset.getParameter<double>("minEta");
+        cfg.cuts.minJetPt = pset.getParameter<double>("minJetPt");
         cfg.cuts.maxJetEta = pset.getParameter<double>("maxJetEta");
         cfg.cuts.minHT = pset.getParameter<double>("minHT");
         cfg.cuts.maxqT = pset.getParameter<double>("maxqT");
@@ -193,6 +194,8 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
     const reco::GenParticle* e1 = zElectrons[0];
     const reco::GenParticle* e2 = zElectrons[1];
 
+    //std::vector<double> ev_phistars;
+
     for (size_t i = 0; i < configs_.size(); ++i) {
         auto& cfg = configs_[i];
 
@@ -236,56 +239,24 @@ void PhiStarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
             double eventWeight = getEventWeight(iEvent, cfg);
             cfg.sumOfWeights += eventWeight;
 
-            std::vector<const reco::GenJet*> goodJets = PhiStarUtils::cleanJets(*genJets, zElectrons, cfg.cuts.maxJetEta);
-            std::vector<double> deltas;
-            double minDR1 = 999.0;
-            double minDR2 = 999.0;
-            reco::Candidate::LorentzVector sum_all_jets(0, 0, 0, 0);
-            for (auto& jet : *genJets) {
-                double dr1 = reco::deltaR(p1, jet);
-                double dr2 = reco::deltaR(p2, jet);
-                if (dr1 < minDR1) {
-                    minDR1 = dr1;
-                }
-                if (dr2 < minDR2) {
-                    minDR2 = dr2;
-                }
-                sum_all_jets += jet.p4();
-            }
-            deltas.push_back(minDR1);
-            deltas.push_back(minDR2);
-
-            for (const auto& p : *genParticles) {
-                if (p.status() != 1) continue;
-                if (std::abs(p.pdgId()) == 12 || std::abs(p.pdgId()) == 14 || std::abs(p.pdgId()) == 16) {
-                    sum_all_jets += p.p4();
-                }
-            }
+            std::vector<const reco::GenJet*> goodJets = PhiStarUtils::cleanJets(*genJets, zElectrons, cfg.cuts.maxJetEta, cfg.cuts.minJetPt);
 
             double phistar = PhiStarUtils::computePhiStar(p1, p2);
+            //if (!cfg.useNominalOnly) ev_phistars.push_back(phistar);
 
             double HT = PhiStarUtils::computeHT(goodJets);
-            reco::Candidate::LorentzVector sum_jets = PhiStarUtils::sumJets(goodJets);
-
-            reco::Candidate::LorentzVector unsm_Z = e1->p4() + e2->p4();
-            double unsm_phi = PhiStarUtils::computePhiStar(e1->p4(), e2->p4());
-
-            double res_pte1 = (e1->pt() - p1.pt())/e1->pt();
-            double res_pte2 = (e2->pt() - p2.pt())/e2->pt();
-            double res_qt = (Z.pt() - unsm_Z.pt())/unsm_Z.pt();
-            double res_phistar = (phistar-unsm_phi)/unsm_phi;
 
             if (HT < cfg.cuts.minHT) continue;
 
-            if (cfg.cuts.region == 1) {
-                if (Z.pt() >= sum_jets.pt() - 15.0) continue;
-            }
-
-            if (cfg.cuts.region == 2) {
-                if (Z.pt() <= sum_jets.pt() + 15.0) continue;
-            }
-
-            plotters_[i]->fill(phistar, Z, p1, p2, HT, sum_jets, goodJets, res_pte1, res_pte2, res_qt, res_phistar, deltas, sum_all_jets.pt(), eventWeight);
+            plotters_[i]->fill(
+                    phistar, 
+                    Z, 
+                    p1, 
+                    p2, 
+                    HT, 
+                    //ev_phistars,
+                    //cfg.useNominalOnly,
+                    eventWeight);
         }
     }
 
@@ -314,6 +285,7 @@ void PhiStarAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descripti
     varDesc.add<double>("minPte2", 0.0);
     varDesc.add<double>("maxEta", 2.5);
     varDesc.add<double>("minEta", 0.0);
+    varDesc.add<double>("minJetPt", 0.0);
     varDesc.add<double>("maxJetEta", 5.0);
     varDesc.add<double>("minHT", 0.0);
     varDesc.add<double>("maxqT", 1000.0);

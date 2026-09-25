@@ -117,15 +117,16 @@ namespace PhiStarUtils {
     std::vector<const reco::GenJet*> cleanJets(
             const std::vector<reco::GenJet>& jets, 
             std::vector<const reco::GenParticle*>& electrons,
-            double maxEta) 
+            double maxEta,
+            double minPt) 
     {
         std::vector<const reco::GenJet*> goodJets;
         for (const auto& jet : jets) {
             bool isolated = std::all_of(electrons.begin(), electrons.end(),
                 [&jet](const reco::GenParticle* e) {
-                    return reco::deltaR(jet, *e) > 0.1;
+                    return reco::deltaR(jet, *e) > 0.05;
                 });
-            if (isolated && std::abs(jet.eta()) < maxEta) {
+            if (isolated && std::abs(jet.eta()) < maxEta && jet.pt() >= minPt) {
                 goodJets.push_back(&jet);
             }
 

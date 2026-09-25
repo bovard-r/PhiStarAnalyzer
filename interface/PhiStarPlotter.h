@@ -36,14 +36,16 @@ public:
             const reco::Candidate::LorentzVector e1, 
             const reco::Candidate::LorentzVector e2, 
             double HT,
-            reco::Candidate::LorentzVector sum_jets,
-            std::vector<const reco::GenJet*> jets, 
-            double res_pte1,
-            double res_pte2,
-            double res_qt,
-            double res_phistar,
-            std::vector<double> deltas,
-            double mpt,
+            //std::vector<double> ev_phistars,
+            //bool use_ev,
+            //reco::Candidate::LorentzVector sum_jets,
+            //std::vector<const reco::GenJet*> jets, 
+            //double res_pte1,
+            //double res_pte2,
+            //double res_qt,
+            //double res_phistar,
+            //std::vector<double> deltas,
+            //double mpt,
             double weight
             );
     void write();
@@ -61,18 +63,22 @@ private:
     TH1D* h_e2_eta_;    
     TH1D* h_e2_phi_;    
     TH1D* h_HT_;
-    TH1D* h_nJets_;
-    TH1D* h_jet_pts_;
-    TH1D* h_mpt_;
-    TH1D* h_dR_jets_;
+
+    //TH2D* h_ev_plus_;
+    //TH2D* h_ev_minus_;
+    
+    //TH1D* h_nJets_;
+    //TH1D* h_jet_pts_;
+    //TH1D* h_mpt_;
+    //TH1D* h_dR_jets_;
 
     //TH2D* res_pte1_;
     //TH2D* res_pte2_;
     //TH2D* res_qt_;
     //TH2D* res_phistar_;
 
-    TH2D* h_HT_vs_qT_;
-    TH2D* h_vecHT_vs_qT_;
+    //TH2D* h_HT_vs_qT_;
+    //TH2D* h_vecHT_vs_qT_;
 };
 
 #endif

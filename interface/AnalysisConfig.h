@@ -9,6 +9,7 @@ struct CutSet {
     double minPte2;
     double maxEta;
     double minEta;
+    double minJetPt;
     double maxJetEta;
     double minHT;
     double maxqT;

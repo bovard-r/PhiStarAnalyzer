@@ -31,7 +31,7 @@ namespace PhiStarUtils {
 
     const reco::Candidate* findOrigin(const reco::GenParticle* p);
 
-    std::vector<const reco::GenJet*> cleanJets(const std::vector<reco::GenJet>& jets, std::vector<const reco::GenParticle*>& electrons, double maxEta);
+    std::vector<const reco::GenJet*> cleanJets(const std::vector<reco::GenJet>& jets, std::vector<const reco::GenParticle*>& electrons, double maxEta, double minPt);
 
 }
 

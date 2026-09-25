@@ -47,10 +47,16 @@ PhiStarPlotter::PhiStarPlotter(const std::string& outputDir)
     : outputDir_(outputDir)
 {
 
+    //std::vector<double> phistarEdges = {
+    //  0.000, 0.004, 0.008, 0.012, 0.016, 0.020, 0.025, 0.030, 0.040, 0.050,
+    //  0.060, 0.080, 0.100, 0.130, 0.170, 0.220, 0.280, 0.350, 0.440, 0.560,
+    //  0.700, 0.900, 1.150, 1.500, 2.000, 2.600, 3.400, 4.500, 6.000, 8.000};
     std::vector<double> phistarEdges = {
-      0.000, 0.004, 0.008, 0.012, 0.016, 0.020, 0.025, 0.030, 0.040, 0.050,
-      0.060, 0.080, 0.100, 0.130, 0.170, 0.220, 0.280, 0.350, 0.440, 0.560,
-      0.700, 0.900, 1.150, 1.500, 2.000, 2.600, 3.400, 4.500, 6.000, 8.000};
+      0.000, 0.020, 0.040, 0.060, 0.080, 0.100, 0.120, 0.140, 0.160, 0.180,
+      0.200, 0.220, 0.240, 0.260, 0.280, 0.300, 0.320, 0.340, 0.360, 0.380,
+      0.400, 0.420, 0.440, 0.460, 0.480, 0.500, 0.520, 0.540, 0.560, 0.580,
+      0.600, 0.620, 0.640, 0.660, 0.680, 0.700, 0.720, 0.740, 0.760, 0.780,
+      0.800, 0.820, 0.840, 0.860, 0.880, 0.900, 0.920, 0.940, 0.960, 0.980, 1.000};
 
     h_phistar_ = new TH1D(
         "h_phistar", "#phi*;#phi*;Events",
@@ -70,13 +76,21 @@ PhiStarPlotter::PhiStarPlotter(const std::string& outputDir)
 
     h_HT_ = new TH1D("h_HT", "HT;HT;Events", 150, 0.0, 300.0);
 
-    h_nJets_ = new TH1D("h_nJets", "Number of Jets;Number of Jets;Events", 51, -0.5, 50.5);
+    //h_ev_plus_ = new TH2D("h_ev_plus", "Positive Eigenvector;nominal #phi*;new #phi*", 
+    //                25, 0.0, 1.5,
+    //                25, 0.0, 1.5);
 
-    h_jet_pts_ = new TH1D("h_jet_pts", "All jet pts", 250, 0, 250);
+    //h_ev_minus_ = new TH2D("h_ev_minus", "Negative Eigenvector;nominal #phi*;new #phi*", 
+    //                25, 0.0, 1.5,
+    //                25, 0.0, 1.5);
 
-    h_dR_jets_ = new TH1D("h_dR_jets", "Delta R between electrons and closest jets", 100, 0, 1);
+    //h_nJets_ = new TH1D("h_nJets", "Number of Jets;Number of Jets;Events", 51, -0.5, 50.5);
 
-    h_mpt_ = new TH1D("h_mpt", "Missing transverse momentum", 150, 0, 150);
+    //h_jet_pts_ = new TH1D("h_jet_pts", "All jet pts", 250, 0, 250);
+
+    //h_dR_jets_ = new TH1D("h_dR_jets", "Delta R between electrons and closest jets", 100, 0, 1);
+
+    //h_mpt_ = new TH1D("h_mpt", "Missing transverse momentum", 150, 0, 150);
 
     //res_pte1_ = new TH2D("res_pte1", "e1 pt difference", 
     //        50, 25, 150,
@@ -91,13 +105,13 @@ PhiStarPlotter::PhiStarPlotter(const std::string& outputDir)
     //        50, 0, 50,
     //        50, -0.01, 0.01);
 
-    h_HT_vs_qT_ = new TH2D("h_HT_vs_qT", "HT vs qT;HT;qT", 
-                    20, 0.0, 500.0,
-                    20, 0.0, 100.0);
+    //h_HT_vs_qT_ = new TH2D("h_HT_vs_qT", "HT vs qT;HT;qT", 
+    //                20, 0.0, 500.0,
+    //                20, 0.0, 100.0);
 
-    h_vecHT_vs_qT_ = new TH2D("h_vecHT_vs_qT", "vector HT vs qT;vector HT;qT", 
-                    20, 0.0, 100.0,
-                    20, 0.0, 100.0);
+    //h_vecHT_vs_qT_ = new TH2D("h_vecHT_vs_qT", "vector HT vs qT;vector HT;qT", 
+    //                20, 0.0, 100.0,
+    //                20, 0.0, 100.0);
 
 }
 
@@ -107,14 +121,16 @@ void PhiStarPlotter::fill(
         const reco::Candidate::LorentzVector e1, 
         const reco::Candidate::LorentzVector e2, 
         double HT,
-        reco::Candidate::LorentzVector sum_jets,
-        std::vector<const reco::GenJet*> jets, 
-        double res_pte1,
-        double res_pte2,
-        double res_qt,
-        double res_phistar,
-        std::vector<double> deltas,
-        double mpt,
+        //std::vector<double> ev_phistars,
+        //bool use_ev,
+        //reco::Candidate::LorentzVector sum_jets,
+        //std::vector<const reco::GenJet*> jets, 
+        //double res_pte1,
+        //double res_pte2,
+        //double res_qt,
+        //double res_phistar,
+        //std::vector<double> deltas,
+        //double mpt,
         double weight) 
     {
 
@@ -134,26 +150,31 @@ void PhiStarPlotter::fill(
 
     h_HT_->Fill(HT, weight);
 
-    h_nJets_->Fill(jets.size(), weight);
+    //if (use_ev) {
+    //   h_ev_plus_->Fill(phistar, ev_phistars[0], weight);
+    //   h_ev_minus_->Fill(phistar, ev_phistars[1], weight);
+    //}
 
-    for (const auto& jet : jets) {
-        h_jet_pts_->Fill(jet->pt(), weight);
-    }
+    //h_nJets_->Fill(jets.size(), weight);
 
-    for (const auto& dR : deltas) {
-        h_dR_jets_->Fill(dR, weight);
-    }
+    //for (const auto& jet : jets) {
+    //    h_jet_pts_->Fill(jet->pt(), weight);
+    //}
 
-    h_mpt_->Fill(mpt, weight);
+    //for (const auto& dR : deltas) {
+    //    h_dR_jets_->Fill(dR, weight);
+    //}
+
+    //h_mpt_->Fill(mpt, weight);
 
     //res_pte1_->Fill(e1.pt(), res_pte1, weight);
     //res_pte2_->Fill(e2.pt(), res_pte2, weight);
     //res_qt_->Fill(Z.pt(), res_qt, weight);
     //res_phistar_->Fill(Z.pt(), res_phistar, weight);
 
-    h_HT_vs_qT_->Fill(HT, Z.pt(), weight);
+    //h_HT_vs_qT_->Fill(HT, Z.pt(), weight);
 
-    h_vecHT_vs_qT_->Fill(sum_jets.pt(), Z.pt(), weight);
+    //h_vecHT_vs_qT_->Fill(sum_jets.pt(), Z.pt(), weight);
 
 }
 
@@ -177,22 +198,25 @@ void PhiStarPlotter::write() {
 
     h_HT_->Write();
 
-    h_nJets_->Write();
+    //h_ev_plus_->Write();
+    //h_ev_minus_->Write();
 
-    h_jet_pts_->Write();
+    //h_nJets_->Write();
 
-    h_dR_jets_->Write();
+    //h_jet_pts_->Write();
 
-    h_mpt_->Write();
+    //h_dR_jets_->Write();
+
+    //h_mpt_->Write();
 
     //res_pte1_->Write();
     //res_pte2_->Write();
     //res_qt_->Write();
     //res_phistar_->Write();
 
-    h_HT_vs_qT_->Write();
+    //h_HT_vs_qT_->Write();
 
-    h_vecHT_vs_qT_->Write();
+    //h_vecHT_vs_qT_->Write();
 
     fout.Close();
 }
